@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.ext import tasks
 import random
 import os
+import json
 
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
@@ -16,7 +17,7 @@ intents = discord.Intents.default()
 intents.members = True
 
 
-test_list = []
+test_list = {}
 
 
 bot = commands.Bot(command_prefix='!', description=description, intents=intents)
@@ -34,13 +35,13 @@ async def repeat(ctx, times: int, content='repeating...'):
 
 @bot.command()
 async def add(ctx, value: str):
-    global test_list
-    test_list.append(value)
+    
+    test_list[value] = value
 
 @bot.command()
 async def check(ctx):
-    global test_list
-    await ctx.send(", ".join(test_list))
+    
+    await ctx.send(json.dumps(test_list))
 
 @tasks.loop(seconds = 3) # repeat after every 10 seconds
 async def myLoop():
