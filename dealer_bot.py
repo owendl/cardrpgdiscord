@@ -5,6 +5,8 @@ import random
 import os
 import json
 
+import abstract_decks.decks as decks
+
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
 There are a number of utility commands being showcased here.'''
@@ -19,6 +21,9 @@ intents.members = True
 
 test_list = {}
 
+# game_deck =  decks.Juggernaut()
+
+games = {}
 
 bot = commands.Bot(command_prefix='!', description=description, intents=intents)
 
@@ -33,21 +38,21 @@ async def repeat(ctx, times: int, content='repeating...'):
     for i in range(times):
         await ctx.send(content)
 
-@bot.command()
-async def add(ctx, value: str):
-    
-    test_list[value] = value
+
 
 @bot.command()
-async def check(ctx):
-    
-    await ctx.send(json.dumps(test_list))
+async def draw(ctx):
+    await ctx.send("did a draw")
 
-@tasks.loop(seconds = 3) # repeat after every 10 seconds
+@bot.command()
+async def play(ctx, game: str):
+    print(game)
+    await ctx.send("starting game of "+game)
+
+
+@tasks.loop(seconds = 30) # repeat after every 10 seconds
 async def myLoop():
     print("test")
-
-
 myLoop.start()
 
 bot.run(os.environ.get("TOKEN"))
