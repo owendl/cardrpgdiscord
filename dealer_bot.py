@@ -39,6 +39,9 @@ async def repeat(ctx, times: int, content='repeating...'):
         await ctx.send(content)
 
 
+@bot.command()
+async def games(ctx):
+    await ctx.send(" ,".join(decks._implemented_games()))
 
 @bot.command()
 async def draw(ctx):
