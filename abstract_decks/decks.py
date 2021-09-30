@@ -13,8 +13,8 @@ class Juggernaut(Deck):
         self.deck_folder = "decks/juggernaut"
         self.deck_index = 0 
 
-    # def _draw(self):
-    #     print(os.listdir(self.deck_folder)[0])
+    def draw(self):
+        print(os.listdir(self.deck_folder)[0])
 
 
 
