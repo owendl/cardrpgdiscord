@@ -23,9 +23,12 @@ test_list = {}
 
 # game_deck =  decks.Juggernaut()
 
-games = {}
+
 
 bot = commands.Bot(command_prefix='!', description=description, intents=intents)
+
+bot.games = {}
+bot.implemented_decks = decks.implemented_decks
 
 @bot.event
 async def on_ready():
@@ -40,7 +43,7 @@ async def repeat(ctx, times: int, content='repeating...'):
 
 
 @bot.command()
-async def games(ctx):
+async def library(ctx):
     await ctx.send(" ,".join(decks._implemented_games()))
 
 @bot.command()
@@ -49,8 +52,11 @@ async def draw(ctx):
 
 @bot.command()
 async def play(ctx, game: str):
-    print(game)
-    await ctx.send("starting game of "+game)
+    if game in bot.implemented_decks:
+        bot.games[ctx.guild.id] = bot.implemented_decks[game]()
+        await ctx.send(bot.games[ctx.guild.id].deck_folder)
+    else:
+        await ctx.send(f"Sorry but {game} has not been implemented. Please choose another game from: {' ,'.join(decks._implemented_games())}")
 
 
 @tasks.loop(seconds = 30) # repeat after every 10 seconds
