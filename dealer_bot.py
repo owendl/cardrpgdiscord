@@ -4,6 +4,8 @@ from discord.ext import tasks
 import random
 import os
 import json
+from datetime import datetime
+import time
 
 import abstract_decks.decks as decks
 
@@ -53,15 +55,22 @@ async def draw(ctx):
 @bot.command()
 async def play(ctx, game: str):
     if game in bot.implemented_decks:
-        bot.games[ctx.guild.id] = bot.implemented_decks[game]()
-        await ctx.send(bot.games[ctx.guild.id].deck_folder)
+        bot.games[ctx.guild.id] = {"deck":bot.implemented_decks[game]()}
+        bot.games[ctx.guild.id]["started"] = datetime.now()
+        bot.games[ctx.guild.id]["last_action"] = datetime.now()
+        await ctx.send(f"Game of {game} started on this server")
     else:
         await ctx.send(f"Sorry but {game} has not been implemented. Please choose another game from: {' ,'.join(decks._implemented_games())}")
 
 
-@tasks.loop(seconds = 30) # repeat after every 10 seconds
+@tasks.loop(seconds = 300) # repeat after every 300 seconds
 async def myLoop():
-    print("test")
+    ref_t= datetime.now()
+    for key, value in bot.games.items():
+        game_age = ref_t - value["last_action"]
+        if game_age.total_seconds()>12*3600:
+            del bot.games[key]
+
 myLoop.start()
 
 bot.run(os.environ.get("TOKEN"))
