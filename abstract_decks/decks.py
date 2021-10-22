@@ -10,11 +10,12 @@ class Deck(ABC):
 class Juggernaut(Deck):
     def __init__(self):
         self.game = "juggernaut"
-        self.deck_folder = "decks/juggernaut"
-        self.deck_index = 0 
+        self.deck_folder = "decks/juggernaut/deck"
+        self.deck_index = -1 
 
     def draw(self):
-        print(os.listdir(self.deck_folder)[0])
+        self.deck_index += 1
+        return [os.path.join(self.deck_folder, os.listdir(self.deck_folder)[self.deck_index])]
 
 
 
