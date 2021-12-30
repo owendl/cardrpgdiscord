@@ -38,20 +38,14 @@ async def on_ready():
     print('------')
 
 @bot.command()
-async def repeat(ctx, times: int, content='repeating...'):
-    """Repeats a message multiple times."""
-    for i in range(times):
-        await ctx.send(content)
-
-
-@bot.command()
 async def library(ctx):
     await ctx.send(" ,".join(decks._implemented_games()))
 
 @bot.command()
 async def draw(ctx, *args):
-    my_files = bot.games[ctx.guild.id]["game"].draw()
+    bot.games[ctx.guild.id]["last_action"] = datetime.now()
 
+    my_files = await bot.games[ctx.guild.id]["game"].draw(ctx, args)
     my_files = [discord.File(x) for x in my_files]
     await ctx.send(files=my_files)
 
