@@ -59,6 +59,11 @@ async def play(ctx, game: str):
     else:
         await ctx.send(f"Sorry but {game} has not been implemented. Please choose another game from: {' ,'.join(decks._implemented_games())}")
 
+@bot.command()
+async def Q(ctx, *args):
+    func = getattr(bot.games[ctx.guild.id]["game"], args[0])
+    s = await func(ctx, args)
+    await ctx.send(s)
 
 @tasks.loop(seconds = 300) # repeat after every 300 seconds
 async def myLoop():
