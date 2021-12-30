@@ -28,11 +28,15 @@ class Juggernaut(Deck):
 
     async def draw(self, ctx, cmd_args):
         self.deck_index += 1
-        await ctx.send("doing a draw")
+        await ctx.send("machine noise")
         time.sleep(15)
         matches = glob.glob(f"{self.deck_folder}/*_{self.deck_index:02}.*")
         m = random.sample(matches,1)[0]
         return [m]
+    
+    async def characters(self, ctx, cmd_args):
+        return "juggernaut characters"
+
 
 
 
