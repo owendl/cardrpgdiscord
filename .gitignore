@@ -1,6 +1,9 @@
 # Decks
 decks/
 
+# Bot token
+discord.token
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
