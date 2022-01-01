@@ -13,9 +13,9 @@ description = '''An example bot to showcase the discord.ext.commands extension
 module.
 There are a number of utility commands being showcased here.'''
 
-from dotenv import load_dotenv
 
-load_dotenv()
+with open("discord.token", "r") as file:
+    token = file.read()
 
 intents = discord.Intents.default()
 intents.members = True
@@ -46,6 +46,13 @@ Here are some of the commands to get started (all commands start with !, this is
 * !Q <function_name> [optional arguments]: this essentially a hook to a wild function. This hook calls a function matching the function_name string provided of the game currently being played and passes to it the space-delimted optional arguments.
 '''
 
+# Helper functions
+def _server_has_game(id):
+    if id in bot.games:
+        return True
+    else:
+        return False
+
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
@@ -57,11 +64,14 @@ async def library(ctx):
 
 @bot.command()
 async def draw(ctx, *args):
-    bot.games[ctx.guild.id]["last_action"] = datetime.now()
+    if _server_has_game(ctx.guild.id):
+        bot.games[ctx.guild.id]["last_action"] = datetime.now()
 
-    my_files = await bot.games[ctx.guild.id]["game"].draw(ctx, args)
-    my_files = [discord.File(x) for x in my_files]
-    await ctx.send(files=my_files)
+        my_files = await bot.games[ctx.guild.id]["game"].draw(ctx, args)
+        my_files = [discord.File(x) for x in my_files]
+        await ctx.send(files=my_files)
+    else:
+        await ctx.send("A game has not been started on this server. Send !instructions to find how to get started.")
 
 @bot.command()
 async def play(ctx, game: str):
@@ -73,9 +83,12 @@ async def play(ctx, game: str):
 
 @bot.command()
 async def Q(ctx, *args):
-    func = getattr(bot.games[ctx.guild.id]["game"], args[0])
-    s = await func(ctx, args)
-    await ctx.send(s)
+    if _server_has_game(ctx.guild.id) in bot.games:
+        func = getattr(bot.games[ctx.guild.id]["game"], args[0])
+        s = await func(ctx, args)
+        await ctx.send(s)
+    else:
+        await ctx.send("A game has not been started on this server. Send !instructions to find how to get started.")
 
 @bot.command()
 async def instructions(ctx, *args):
@@ -95,4 +108,4 @@ async def myLoop():
 
 myLoop.start()
 
-bot.run(os.environ.get("TOKEN"))
+bot.run(token)
