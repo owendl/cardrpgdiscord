@@ -48,7 +48,7 @@ Here are some of the commands to get started (all commands start with !, this is
 
 # Helper functions
 def _server_has_game(id):
-    if id in bot.games:
+    if id in bot.games.keys():
         return True
     else:
         return False
@@ -66,27 +66,29 @@ async def library(ctx):
 async def draw(ctx, *args):
     if _server_has_game(ctx.guild.id):
         bot.games[ctx.guild.id]["last_action"] = datetime.now()
+        await bot.games[ctx.guild.id]["game"].draw(ctx, args)
 
-        my_files = await bot.games[ctx.guild.id]["game"].draw(ctx, args)
-        my_files = [discord.File(x) for x in my_files]
-        await ctx.send(files=my_files)
     else:
         await ctx.send("A game has not been started on this server. Send !instructions to find how to get started.")
 
 @bot.command()
 async def play(ctx, game: str):
     if game in bot.implemented_decks:
-        bot.games[ctx.guild.id] = {"game":bot.implemented_decks[game](), "started": datetime.now(), "last_action": datetime.now()}
-        await ctx.send(f"Game of {game} started on this server")
+        bot.games[ctx.guild.id] = {"game":bot.implemented_decks[game](), "started": datetime.now(), "last_action": datetime.now()}        
+        intro_text = getattr(bot.games[ctx.guild.id]["game"], "introduction", False)
+        if intro_text:
+            await ctx.send(intro_text)
+        else:
+            await ctx.send(f"Game of {game} started on this server")
+
     else:
         await ctx.send(f"Sorry but {game} has not been implemented. Please choose another game from: {' ,'.join(decks._implemented_games())}")
 
 @bot.command()
 async def Q(ctx, *args):
-    if _server_has_game(ctx.guild.id) in bot.games:
+    if _server_has_game(ctx.guild.id):
         func = getattr(bot.games[ctx.guild.id]["game"], args[0])
-        s = await func(ctx, args)
-        await ctx.send(s)
+        await func(ctx, args)
     else:
         await ctx.send("A game has not been started on this server. Send !instructions to find how to get started.")
 
