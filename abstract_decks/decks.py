@@ -105,6 +105,8 @@ Simms: Not sure what is going on with this joker. Better find out.
         self.deck_index += 1
         await ctx.send("machine noise")
         time.sleep(15)
+        # looks in the deck folder for a image file that ends in the appropriate two digits, then chooses a random one from any files that match 
+        # thus you can mix the various card colors into one ever changing deck
         matches = glob.glob(f"{self.deck_folder}/*_{self.deck_index:02}.*")
         m = random.sample(matches,1)
         my_files = [discord.File(x) for x in m]
